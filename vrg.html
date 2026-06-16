@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Virtual Recipe Card Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      width: 700px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+    h1 {
+      text-align: center;
+      color: #e67e22;
+    }
+    input, textarea, button {
+      margin: 8px 0;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background: #e67e22;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #d35400;
+    }
+    .card {
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 12px;
+      background: #f9f9f9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #e67e22;
+    }
+    .card ul {
+      padding-left: 20px;
+    }
+    .card ol {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍴 Virtual Recipe Card Generator</h1>
+
+    <!-- Recipe Form -->
+    <input type="text" id="recipeTitle" placeholder="Recipe Title">
+    <textarea id="ingredients" rows="4" placeholder="Enter ingredients (one per line)"></textarea>
+    <textarea id="steps" rows="4" placeholder="Enter steps (one per line)"></textarea>
+    <button onclick="addRecipe()">Generate Recipe Card</button>
+    <button onclick="clearRecipes()">Clear All Recipes</button>
+
+    <!-- Recipe Cards -->
+    <div id="cards"></div>
+  </div>
+
+  <script>
+    let recipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+    function addRecipe() {
+      const title = document.getElementById("recipeTitle").value.trim();
+      const ingredients = document.getElementById("ingredients").value.trim().split("\n").filter(i => i);
+      const steps = document.getElementById("steps").value.trim().split("\n").filter(s => s);
+
+      if (!title || ingredients.length === 0 || steps.length === 0) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      const recipe = { title, ingredients, steps };
+      recipes.push(recipe);
+      localStorage.setItem("recipes", JSON.stringify(recipes));
+
+      document.getElementById("recipeTitle").value = "";
+      document.getElementById("ingredients").value = "";
+      document.getElementById("steps").value = "";
+
+      displayRecipes();
+    }
+
+    function clearRecipes() {
+      if (confirm("Clear all recipes?")) {
+        recipes = [];
+        localStorage.removeItem("recipes");
+        displayRecipes();
+      }
+    }
+
+    function displayRecipes() {
+      const cardsDiv = document.getElementById("cards");
+      cardsDiv.innerHTML = "";
+      recipes.forEach(recipe => {
+        let html = `<div class="card">
+          <h2>${recipe.title}</h2>
+          <h3>Ingredients:</h3>
+          <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+          <h3>Steps:</h3>
+          <ol>${recipe.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+        </div>`;
+        cardsDiv.innerHTML += html;
+      });
+    }
+
+    displayRecipes();
+  </script>
+</body>
+</html>
